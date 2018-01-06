@@ -97,7 +97,8 @@ MIT Lisence.
 
 ## To do ##
 
-*   Update `$when` logic of both `u()` and `s()`, so that it could run multiple column match test
+*   Update `$when` logic of `u()` and `s()`, so that it could run multiple column match test (Currently it fails when more than 2 rows match with `$when`)
+*   Update `$where` logic of `r()` and `h()` so that it could select certain columns of the table (Currently it's only `SELECT * FROM`)
 *   Add more `$where` options than `'offset'` & `'limit'`
 *   Pass the unit test of the code
-*   Supporting more database than MySQL
+*   Support more database than MySQL
