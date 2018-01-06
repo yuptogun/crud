@@ -214,6 +214,21 @@ class Crud extends CI_Model {
 		}
 	}
 
+	// s et the row regardless of whether it is already inserted or not
+	// $where => table name
+	// $when => array of unique key match condition. array('uid', 47) || array('uid' => 47)
+	// $what => array of the values under the existing columns
+	// $how => 'json' for {result: true/false} json, default for simple PHP boolean
+	public function set ($where, $when, $what, $how = null) { return $this->s($where, $when, $what, $how); }
+	public function s ($where, $when, $what, $how = null) {
+
+		if (count($this->r($where, $when)) == 1) :
+			return $this->u($where, $when, $what, $how);
+		else :
+			return $this->c($where, $what, $how);
+		endif;
+	}
+
 	// h umanize column names
 	// $where => table name to returns array of the proper column names, utilizing column comment and column name itself
 	// $how => set true to get associative array like ['uid' => 'unique ID', 'modified_at' => 'The Last Modification', ...]
@@ -238,20 +253,5 @@ class Crud extends CI_Model {
 			}
 		}
 		return $return;
-	}
-
-	// s et the row regardless of whether it is already inserted or not
-	// $where => table name
-	// $when => array of unique key match condition. array('uid', 47) || array('uid' => 47)
-	// $what => array of the values under the existing columns
-	// $how => 'json' for {result: true/false} json, default for simple PHP boolean
-	public function set ($where, $when, $what, $how = null) { return $this->s($where, $when, $what, $how); }
-	public function s ($where, $when, $what, $how = null) {
-
-		if (count($this->r($where, $when)) == 1) :
-			return $this->u($where, $when, $what, $how);
-		else :
-			return $this->c($where, $what, $how);
-		endif;
 	}
 }

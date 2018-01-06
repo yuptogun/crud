@@ -31,7 +31,7 @@ The other purpose is, to give extra functionality to the developers who works un
 
 ## Available Methods ##
 
-1. `c($where, $what, $how = null)`
+1.  `c($where, $what, $how = null)`
     Create.
     -  `$where` *(str)* Where to insert. A table name.
     - `$what` *(arr)* What to insert into the table. An associative array of the columns and the content.
@@ -67,14 +67,14 @@ The other purpose is, to give extra functionality to the developers who works un
     - `$how` *(str)* Exact same of `c($how)`.
 
 
-5. `s($where, $when, $what, $how = null)`
+5.  `s($where, $when, $what, $how = null)`
     Set, that is equivalent to:
     - `u($where, $when, $what, $how)`, if `r($where, $when)` gives result of one row.
     - `c($where, $what, $how)`, otherwise.
 
 
 6.  `h($where, $how = false)`
-    Humanize (or, by retrieving the column comments) the column of the table.
+    Humanize (or, retrieve the column comments to give the name of) each column of the table.
     - `$where` *(str)* A table name to humanize.
     - `$how` *(mixed)* Exact same of `c($how)`.
 
@@ -88,11 +88,15 @@ A cheatsheet just in case you don't recall! :-)
 3.  `update() === u()`
 4.  `delete() === d()`
 5.  `set() === s()`
-6. `humanize_column_names() === humanize_columns() === humanize_column() === humanize() === h()`
+6.  `humanize_column_names() === humanize_columns() === humanize_column() === humanize() === h()`
+
+## Lisence ##
+
+MIT Lisence.
 
 ## To do ##
 
 *   Update `$when` logic of both `u()` and `s()`, so that it could run multiple column match test
-*   Add more `SELECT` options like ` %string%`
+*   Add more `$where` options than `'offset'` & `'limit'`
 *   Pass the unit test of the code
 *   Supporting more database than MySQL
