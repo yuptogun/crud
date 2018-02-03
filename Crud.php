@@ -13,6 +13,8 @@ class Crud extends CI_Model {
 	public function __construct () {
 		parent::__construct();
 		$this->load->database();
+
+		$this->delimiter = ', ';
 	}
 
 	// c reate
@@ -77,23 +79,40 @@ class Crud extends CI_Model {
 						}
 					}
 				}
-				$query = $this->db->get($what);
+				if (is_array($what)) {
+					$this->db->select($what['columns']);
+					$this->db->from($what['table']);
+					$query = $this->db->get();
+				} else {
+					$query = $this->db->get($what);
+				}
 
 			} else {
 				$the_query = "SELECT ";
-				$comments = $this->h($what);
-				$columns_query = $this->db->list_fields($what);
-				for ($i=0; $i < count($columns_query); $i++) { 
+
+				$what_table = is_array($what) ? $what['table'] : $what;				
+
+				$comments = $this->h($what_table);
+				$columns_query = $this->db->list_fields($what_table);
+				$what_columns = is_array($what) ? explode($this->delimiter, $what['columns']) : $columns_query;
+
+				for ($i = 0; $i < count($what_columns); $i++) { 
 					$comment = $comments[$i];
-					$the_query .= "`$columns_query[$i]` AS '$comment'";
-					if ($i < count($columns_query) - 1) : $the_query .= ', '; endif;
-				}
-				if ($who === 'world') {
-					for ($i=0; $i < count($columns_query); $i++) { 
-						$the_query .= ", `$columns_query[$i]`";
+					if (in_array($columns_query[$i], $what_columns)) {
+						$the_query .= "`$columns_query[$i]` AS '$comment'";
+						if ($i < count($what_columns) - 1) : $the_query .= $this->delimiter; endif;
 					}
 				}
-				$the_query .= " FROM `$what`";
+				if ($who === 'world') {
+					$the_query .= $this->delimiter;
+					for ($i = 0; $i < count($what_columns); $i++) {
+						if (in_array($columns_query[$i], $what_columns)) {
+							$the_query .= "`$columns_query[$i]`";
+							if ($i < count($what_columns) - 1) : $the_query .= $this->delimiter; endif;
+						}
+					}
+				}
+				$the_query .= " FROM `$what_table`";
 				if (is_array($where)) {
 					foreach ($where as $key => $value) {
 						switch ($key) {
@@ -156,15 +175,23 @@ class Crud extends CI_Model {
 
 			$this->db->trans_begin();
 
+			foreach ($what as $key_to_update => $value_to_update) {
+				if ($this->o($where, $key_to_update, $value_to_update)) {
+					$this->db->set($key_to_update, $value_to_update, false);
+				} else {
+					$this->db->set($key_to_update, $value_to_update);
+				}
+			}
+
 			// array('uid', 47)
 			if (count($when) == 2) {
 				$this->db->where($when[0], $when[1]);
-				$this->db->update($where, $what);
-
 			// array('uid' => 47)
 			} else {
-				$this->db->update($where, $what, $when);
+				$this->db->where(array_keys($when)[0], array_values($when)[0]);
 			}
+
+			$this->db->update($where);
 
 			$this->db->trans_complete();
 
@@ -253,5 +280,34 @@ class Crud extends CI_Model {
 			}
 		}
 		return $return;
+	}
+
+	// m etadata please?
+	// $where => table name
+	// $what => certain field name or null for all the fields
+	public function metadata ($where, $what = null) { return $this->m($where, $what); }
+	public function m ($where, $what = null) {
+
+		$fields = $this->db->field_data($where);
+		if ($what) {
+			foreach ($fields as $field) {
+				if ($field->name == $what) {
+					return $field;
+				}
+			}
+		} else {
+			return $fields;
+		}
+	}
+
+	// o perator is there?
+	// return true if the field type is int and the input value contains operator
+	// $where => table name
+	// $what => field to check
+	// $how => value to check
+	public function operator ($where, $what, $how) { return $this->o($where, $what, $how); }
+	public function o ($where, $what, $how) {
+
+		return ($this->m($where, $what)->type == 'int') && preg_match('/\w+\s?\W+\s?\d+/', $how);
 	}
 }

@@ -31,7 +31,7 @@ The other purpose is, to give extra functionality to the developers who works un
 
 ## Available Methods ##
 
-1.  `c($where, $what, $how = null)`
+1. `c($where, $what, $how = null)`
     Create.
     -  `$where` *(str)* Where to insert. A table name.
     - `$what` *(arr)* What to insert into the table. An associative array of the columns and the content.
@@ -40,20 +40,31 @@ The other purpose is, to give extra functionality to the developers who works un
 
 2.  `r($what, $where = null, $how = null, $who = false)`
     Read.
-    - `$what`   *(str)* Where to start reading. A table name.
-    - `$where` *(arr)* The "where" information to read the table. An associative array of either `order`, `limit` or the existing columnn name.
+    - `$what`   *(str | arr)* Where to start reading. Either:
+      - a string, to do `SELECT *` query, or
+      - an associative array, to do `SELECT 'foo', 'bar' ...` query
+        ```
+        # Crud.php
+        $this->delimiter = ' & ';
+        
+        # (your controller).php
+        array(
+          'table' => 'users',
+          'columns' => 'username & nickname & gender')
+        ```
+    - `$where` *(arr)* The "where" information to read the table. An associative array of either `order`, `limit` or the existing column name.
       - `order` *(arr)* An associative array with one key specifying the target column and its value valid to SQL ORDER syntax, such as `random`, `asc`, `desc`.
       - `limit` *(arr)* A simple array of 2 numbers. The first element is `LIMIT` and the last element is `OFFSET`.
-      - if the key is neither `order` nor `limit`, **CRUD** regards it as the column key and its value as the rest part of SQL WHERE syntax.
+      - if the key is neither `order` nor `limit`, **CRUD** regards it as the column name and its value as the rest part of SQL WHERE syntax.
       For example: `array('column_user_age' => '> 19')`
     - `$how` *(str)* How to get the result of the query. Either `'json'`, `'array'`(a perfect array) or `null`(array of row objects).
-    - `$who` *(mixed)* Who is going to read it. Utilizing `h()` method. Either `'human'`(or `true`) for human readable names only, `'robot'`(or `false`) for the code-friendly column keys only or `'world'` for both.
+    - `$who` *(mixed)* Who is going to read it. Utilizing `h()` method. Either `'human'`(or `true`) for human readable names only, `'robot'`(or `false`) for the code-friendly column names only or `'world'` for both.
 
 
 3.  `u($where, $when, $what, $how = null)`
     Update.
     - `$where` *(str)* Where to update the row. A table name.
-    - `$when` *(arr)* When to insert. A simple array of 2 values about the target row. The first element is column key and the last element is the **unique** value.
+    - `$when` *(arr)* When to insert. A simple array of 2 values about the target row. The first element is column name and the last element is the **unique** value.
         - For example: `array('uid', 49)`
     - `$what` *(arr)* What to update into the table. An associative array of the target columns and the new contents.
     - `$how` *(str)* Exact same of `c($how)`.
@@ -62,22 +73,38 @@ The other purpose is, to give extra functionality to the developers who works un
 4.  `d($where, $what, $how = null)`
     Delete.
     - `$where` *(str)* Where to delete a row. A table name.
-    - `$what` *(arr)* What row to delete. A simple array of 2 values about the target row. The first element is column key and the last element is the **unique** value.
+    - `$what` *(arr)* What row to delete. A simple array of 2 values about the target row. The first element is column name and the last element is the **unique** value.
         For example: `array('uid', 2)`
     - `$how` *(str)* Exact same of `c($how)`.
 
 
-5.  `s($where, $when, $what, $how = null)`
+5. `s($where, $when, $what, $how = null)`
     Set, that is equivalent to:
     - `u($where, $when, $what, $how)`, if `r($where, $when)` gives result of one row.
     - `c($where, $what, $how)`, otherwise.
 
 
 6.  `h($where, $how = false)`
-    Humanize (or, retrieve the column comments to give the name of) each column of the table.
+    Humanize (or, by retrieving the column comments) the column of the table.
     - `$where` *(str)* A table name to humanize.
-    - `$how` *(bool)* Whether you need to have the column key with its human readable name. `true` gives an associative array with the column keys as the key and the column comments as the value. `false` gives a simple array of the column comments only.
-    - When the column comment is not set, it uses the column key as the readable name.
+    - `$how` *(mixed)* Exact same with `c($how)`.
+
+
+7.  `m($where, $what = null)`
+    Return metadata of the table fields. An utility function specifically for `$o()`.
+    - `$where` *(str)* A table name to get the fields.
+    - `$what` *(str)* A specific target field name.
+
+
+8.  `o($where, $what, $how)`
+    Check if the field type is `int` and `$how` contains the operator symbol, so that you can do something like this:
+    ```
+    $counted = $this->crud->u('posts', array('uid', 21), array('counts' => 'counts + 1'));
+    ```
+
+    - `$where` *(str)* A table name that contains the regarding field.
+    - `$what` *(str)* The field name in the table.
+    - `$how` *(str)* The query string to test over the field.
 
 
 ## Alias of the methods ##
@@ -90,15 +117,11 @@ A cheatsheet just in case you don't recall! :-)
 4.  `delete() === d()`
 5.  `set() === s()`
 6.  `humanize_column_names() === humanize_columns() === humanize_column() === humanize() === h()`
-
-## Lisence ##
-
-MIT Lisence.
+7.  `metadata() === m()`
 
 ## To do ##
 
-*   Update `$when` logic of `u()` and `s()`, so that it could run multiple column match test (Currently it fails when more than 2 rows match with `$when`)
-*   Update `$where` logic of `r()` and `h()` so that it could select certain columns of the table (Currently it's only `SELECT * FROM`)
-*   Add more `$where` options than `'offset'` & `'limit'`
+*   Update `$when` logic of both `u()` and `s()`, so that it could run multiple column match test
+*   Add more `WHERE` options like `LIKE %string%`
 *   Pass the unit test of the code
-*   Support more database than MySQL
+*   Supporting more database than MySQL
