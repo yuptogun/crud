@@ -33,7 +33,7 @@ The other purpose is, to give extra functionality to the developers who works un
 
 1. `c($where, $what, $how = null)`
     Create.
-    -  `$where` *(str)* Where to insert. A table name.
+    - `$where` *(str)* Where to insert. A table name.
     - `$what` *(arr)* What to insert into the table. An associative array of the columns and the content.
     - `$how` *(str)* How to get the result of the query. Either `'json'` or `null`.
 
@@ -45,12 +45,12 @@ The other purpose is, to give extra functionality to the developers who works un
       - an associative array, to do `SELECT 'foo', 'bar' ...` query
         ```
         # Crud.php
-        $this->delimiter = ' & ';
+        $this->delimiter = ', '; // this is the default, set in __construct() that you can change this
         
         # (your controller).php
         array(
           'table' => 'users',
-          'columns' => 'username & nickname & gender')
+          'columns' => 'username, nickname, gender')
         ```
     - `$where` *(arr)* The "where" information to read the table. An associative array of either `order`, `limit` or the existing column name.
       - `order` *(arr)* An associative array with one key specifying the target column and its value valid to SQL ORDER syntax, such as `random`, `asc`, `desc`.
