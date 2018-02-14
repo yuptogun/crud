@@ -60,11 +60,9 @@ class Crud extends CI_Model {
 					foreach ($where as $key => $value) {
 						switch ($key) {
 							case 'limit' :
-								if (isset($value['limit'])) {
-									$limit = intval($value[0]);
-									$offset = isset($value[1]) ? intval($value[1]) : 0;
-									$this->db->limit($limit, $offset);
-								}
+								$limit = intval($value[0]);
+								$offset = isset($value[1]) ? intval($value[1]) : 0;
+								$this->db->limit($limit, $offset);
 								break;
 
 							case 'order' :

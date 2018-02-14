@@ -40,21 +40,20 @@ The other purpose is, to give extra functionality to the developers who works un
 
 2.  `r($what, $where = null, $how = null, $who = false)`
     Read.
-    - `$what`   *(str | arr)* Where to start reading. Either:
+    - `$what`   *(str|arr)* Where to start reading. Either:
       - a string, to do `SELECT *` query, or
       - an associative array, to do `SELECT 'foo', 'bar' ...` query
         ```
-        # Crud.php
-        $this->delimiter = ', '; // this is the default, set in __construct() that you can change this
-        
-        # (your controller).php
+        // Crud.php
+        $this->delimiter = ', '; // this is the default, set in the construct function
+        // Your_controller.php
         array(
           'table' => 'users',
           'columns' => 'username, nickname, gender')
         ```
     - `$where` *(arr)* The "where" information to read the table. An associative array of either `order`, `limit` or the existing column name.
       - `order` *(arr)* An associative array with one key specifying the target column and its value valid to SQL ORDER syntax, such as `random`, `asc`, `desc`.
-      - `limit` *(arr)* A simple array of 2 numbers. The first element is `LIMIT` and the last element is `OFFSET`.
+      - `limit` *(arr)* A simple array of 2 numbers (`LIMIT` and `OFFSET`)
       - if the key is neither `order` nor `limit`, **CRUD** regards it as the column name and its value as the rest part of SQL WHERE syntax.
       For example: `array('column_user_age' => '> 19')`
     - `$how` *(str)* How to get the result of the query. Either `'json'`, `'array'`(a perfect array) or `null`(array of row objects).
@@ -118,6 +117,7 @@ A cheatsheet just in case you don't recall! :-)
 5.  `set() === s()`
 6.  `humanize_column_names() === humanize_columns() === humanize_column() === humanize() === h()`
 7.  `metadata() === m()`
+8.  `operator() === o()`
 
 ## To do ##
 
