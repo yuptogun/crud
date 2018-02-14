@@ -48,7 +48,7 @@ class Crud extends CI_Model {
 	// $what => table name
 	// $where => array of the queries. set null to get all rows
 	// $how => 'json' for json, 'array' for pure array or default for array of objects
-	// $who => 'human' or true for humanized names only, 'robot' or false or default for DB column keys only or 'world' for both. utilizing $this->h() function.
+	// $who => 'human' or true for humanized names only, 'robot' or false or default for DB field keys only or 'world' for both. utilizing $this->h() function.
 	public function read ($what, $where = null, $how = null, $who = false) { return $this->r($what, $where, $how, $who); }
 	public function r ($what, $where = null, $how = null, $who = false) {
 
@@ -66,8 +66,8 @@ class Crud extends CI_Model {
 								break;
 
 							case 'order' :
-								foreach ($value as $column => $order) {
-									$this->db->order_by($column, $order);
+								foreach ($value as $field => $order) {
+									$this->db->order_by($field, $order);
 								}
 								break;
 							
@@ -78,7 +78,7 @@ class Crud extends CI_Model {
 					}
 				}
 				if (is_array($what)) {
-					$this->db->select($what['columns']);
+					$this->db->select($what['fields']);
 					$this->db->from($what['table']);
 					$query = $this->db->get();
 				} else {
@@ -91,22 +91,22 @@ class Crud extends CI_Model {
 				$what_table = is_array($what) ? $what['table'] : $what;				
 
 				$comments = $this->h($what_table);
-				$columns_query = $this->db->list_fields($what_table);
-				$what_columns = is_array($what) ? explode($this->delimiter, $what['columns']) : $columns_query;
+				$fields_query = $this->db->list_fields($what_table);
+				$what_fields = is_array($what) ? explode($this->delimiter, $what['columns']) : $fields_query;
 
-				for ($i = 0; $i < count($what_columns); $i++) { 
+				for ($i = 0; $i < count($what_fields); $i++) { 
 					$comment = $comments[$i];
-					if (in_array($columns_query[$i], $what_columns)) {
-						$the_query .= "`$columns_query[$i]` AS '$comment'";
-						if ($i < count($what_columns) - 1) : $the_query .= $this->delimiter; endif;
+					if (in_array($fields_query[$i], $what_fields)) {
+						$the_query .= "`$fields_query[$i]` AS '$comment'";
+						if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
 					}
 				}
 				if ($who === 'world') {
 					$the_query .= $this->delimiter;
-					for ($i = 0; $i < count($what_columns); $i++) {
-						if (in_array($columns_query[$i], $what_columns)) {
-							$the_query .= "`$columns_query[$i]`";
-							if ($i < count($what_columns) - 1) : $the_query .= $this->delimiter; endif;
+					for ($i = 0; $i < count($what_fields); $i++) {
+						if (in_array($fields_query[$i], $what_fields)) {
+							$the_query .= "`$fields_query[$i]`";
+							if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
 						}
 					}
 				}
@@ -123,8 +123,8 @@ class Crud extends CI_Model {
 								break;
 	
 							case 'order' :
-								foreach ($value as $column => $order) {
-									$the_query .= " ORDER BY `$column` $order";
+								foreach ($value as $field => $order) {
+									$the_query .= " ORDER BY `$field` $order";
 								}
 								break;
 							

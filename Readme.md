@@ -20,13 +20,13 @@ With **CRUD** loaded, the above is equivalent to:
         ),
         'json');
 
-The other purpose is, to give extra functionality to the developers who works under PHP-MySQL environment and the expected needs they sometimes need to meet. Like, storing and retrieving the human readable names of the table columns.
+The other purpose is, to give extra functionality to the developers who works under the LAMP environment and the expected needs they sometimes need to meet. Like, storing and retrieving the human readable names of the table fields.
 
 > Please note that this model assumes the DB is MySQL.
 
 ## Installation ##
 
-- Simply put `Crud.php` into your Codeigniter application's models directory.
+- Simply put `Crud.php` into your Codeigniter application's models directory and load it to use.
 - If you're familiar with Git, clone and make use of this entire repo as you please.
 
 ## Available Methods ##
@@ -34,45 +34,45 @@ The other purpose is, to give extra functionality to the developers who works un
 1. `c($where, $what, $how = null)`
     Create.
     - `$where` *(str)* Where to insert. A table name.
-    - `$what` *(arr)* What to insert into the table. An associative array of the columns and the content.
+    - `$what` *(arr)* What to insert into the table. An associative array of the fields and the content.
     - `$how` *(str)* How to get the result of the query. Either `'json'` or `null`.
 
 
 2.  `r($what, $where = null, $how = null, $who = false)`
     Read.
     - `$what`   *(str|arr)* Where to start reading. Either:
-      - a string, to do `SELECT *` query, or
-      - an associative array, to do `SELECT 'foo', 'bar' ...` query
+      - a string of table name, to do all-fields query, or
+      - an associative array, to do field-specific query
         ```
         // Crud.php
         $this->delimiter = ', '; // this is the default, set in the construct function
         // Your_controller.php
         array(
           'table' => 'users',
-          'columns' => 'username, nickname, gender')
+          'fields' => 'username, nickname, gender')
         ```
-    - `$where` *(arr)* The "where" information to read the table. An associative array of either `order`, `limit` or the existing column name.
-      - `order` *(arr)* An associative array with one key specifying the target column and its value valid to SQL ORDER syntax, such as `random`, `asc`, `desc`.
+    - `$where` *(arr)* The `WHERE` information to read the table. An associative array of either `order`, `limit` or the existing field name.
+      - `order` *(arr)* An associative array with one key specifying the target field and its value valid to SQL ORDER syntax, such as `random`, `asc`, `desc`.
       - `limit` *(arr)* A simple array of 2 numbers (`LIMIT` and `OFFSET`)
-      - if the key is neither `order` nor `limit`, **CRUD** regards it as the column name and its value as the rest part of SQL WHERE syntax.
+      - if the key is neither `order` nor `limit`, **CRUD** regards it as the field name and its value as the rest part of SQL WHERE syntax.
       For example: `array('column_user_age' => '> 19')`
     - `$how` *(str)* How to get the result of the query. Either `'json'`, `'array'`(a perfect array) or `null`(array of row objects).
-    - `$who` *(mixed)* Who is going to read it. Utilizing `h()` method. Either `'human'`(or `true`) for human readable names only, `'robot'`(or `false`) for the code-friendly column names only or `'world'` for both.
+    - `$who` *(mixed)* Who is going to read it. Utilizing `h()` method. Either `'human'`(or `true`) for human readable names only, `'robot'`(or `false`) for the code-friendly field names only or `'world'` for both.
 
 
 3.  `u($where, $when, $what, $how = null)`
     Update.
     - `$where` *(str)* Where to update the row. A table name.
-    - `$when` *(arr)* When to insert. A simple array of 2 values about the target row. The first element is column name and the last element is the **unique** value.
+    - `$when` *(arr)* When to insert. A simple array of 2 values about the target row. The first element is field name and the last element is the **unique** value.
         - For example: `array('uid', 49)`
-    - `$what` *(arr)* What to update into the table. An associative array of the target columns and the new contents.
+    - `$what` *(arr)* What to update into the table. An associative array of the target fields and the new contents.
     - `$how` *(str)* Exact same of `c($how)`.
 
 
 4.  `d($where, $what, $how = null)`
     Delete.
     - `$where` *(str)* Where to delete a row. A table name.
-    - `$what` *(arr)* What row to delete. A simple array of 2 values about the target row. The first element is column name and the last element is the **unique** value.
+    - `$what` *(arr)* What row to delete. A simple array of 2 values about the target row. The first element is field name and the last element is the **unique** value.
         For example: `array('uid', 2)`
     - `$how` *(str)* Exact same of `c($how)`.
 
@@ -84,7 +84,7 @@ The other purpose is, to give extra functionality to the developers who works un
 
 
 6.  `h($where, $how = false)`
-    Humanize (or, by retrieving the column comments) the column of the table.
+    Humanize (or, by retrieving the field comments) the field of the table.
     - `$where` *(str)* A table name to humanize.
     - `$how` *(mixed)* Exact same with `c($how)`.
 
