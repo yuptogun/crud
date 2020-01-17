@@ -131,14 +131,14 @@ A cheatsheet just in case you don't recall.
 7.  `metadata() === m()`
 8.  `operator() === o()`
 
-## So you don't accept any PR ? ##
+## So you don't accept any PR? ##
 
 I probably do. Now the repo is applied of Git Flow, FYI.
 
 ## To do ##
 
-Since CRUD has no support for mid-level SQL needs like JOIN, GROUP, COUNT or else, this approach should be replaced by something enhanced. To be announced.
+Since CRUD has not any good idea of DB drivers or any support for mid-level SQL needs like JOIN, GROUP, COUNT or else, this approach should be replaced by something enhanced. To be announced.
 
 ## License
 
-Public Domain lol
+MIT
