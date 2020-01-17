@@ -9,200 +9,200 @@
  */
 class Crud extends CI_Model
 {
-	/**
-	 * delimiter
-	 *
-	 * @var string
-	 */
-	public $delimiter = ', ';
+    /**
+     * delimiter
+     *
+     * @var string
+     */
+    public $delimiter = ', ';
 
-	/**
-	 * take a database connection name to initiate
-	 *
-	 * @param string $database
+    /**
+     * take a database connection name to initiate
+     *
+     * @param string $database
      * @param string $delimiter
-	 */
-	public function __construct($database = null, $delimiter = null)
-	{
+     */
+    public function __construct($database = null, $delimiter = null)
+    {
         parent::__construct();
 
         $this->load->database($database);
 
-		if ($delimiter) $this->delimiter = $delimiter;
-	}
+        if ($delimiter) $this->delimiter = $delimiter;
+    }
 
-	/**
-	 * c reate
-	 * 
-	 * basically it does exactly what the basic $this->db->insert() do
-	 *
-	 * @param string $where what table to deal with
-	 * @param array $what all the VALUES in an array
-	 * @param string $how how you want to get the result. 'json' or null
-	 * @return string|bool
+    /**
+     * c reate
+     * 
+     * basically it does exactly what the basic $this->db->insert() do
+     *
+     * @param string $where what table to deal with
+     * @param array $what all the VALUES in an array
+     * @param string $how how you want to get the result. 'json' or null
+     * @return string|bool
      * @todo support mass create
-	 */
-	public function c($where, $what, $how = null)
-	{
-		if (empty($where) || empty($what)) return false;
+     */
+    public function c($where, $what, $how = null)
+    {
+        if (empty($where) || empty($what)) return false;
 
-		$this->db->insert($where, $what);
-		$result = ($this->db->affected_rows() > 0);
+        $this->db->insert($where, $what);
+        $result = ($this->db->affected_rows() > 0);
 
-		switch ($how) {
-			case 'json':
-				return json_encode(compact('result'));
-				break;
-			
-			default:
-				return $result;
-				break;
-		}
-	}
+        switch ($how) {
+            case 'json':
+                return json_encode(compact('result'));
+                break;
+            
+            default:
+                return $result;
+                break;
+        }
+    }
 
-	/**
-	 * alias of $this->c()
-	 *
-	 * @param string $where
-	 * @param array $what
-	 * @param string $how
-	 * @return string|bool
-	 */
-	public function create($where, $what, $how = null)
-	{
-		return $this->c($where, $what, $how);
-	}
+    /**
+     * alias of $this->c()
+     *
+     * @param string $where
+     * @param array $what
+     * @param string $how
+     * @return string|bool
+     */
+    public function create($where, $what, $how = null)
+    {
+        return $this->c($where, $what, $how);
+    }
 
-	/**
-	 * r ead
-	 *
-	 * @param string $what what table to deal with
-	 * @param array $where all the WHEREs in an array of the queries, set null to get all rows whatsoever
-	 * @param string $how how you want to get the results. 'json', 'array', 'row' or null
-	 * @param mixed $who for whom the field names should be provided, 'human', 'robot' or 'world'. utilizing $this->h().
-	 * @return array|string
-	 */
-	public function r($what, $where = null, $how = null, $who = false)
-	{
-		if (empty($what)) return false;
+    /**
+     * r ead
+     *
+     * @param string $what what table to deal with
+     * @param array $where all the WHEREs in an array of the queries, set null to get all rows whatsoever
+     * @param string $how how you want to get the results. 'json', 'array', 'row' or null
+     * @param mixed $who for whom the field names should be provided, 'human', 'robot' or 'world'. utilizing $this->h().
+     * @return array|string
+     */
+    public function r($what, $where = null, $how = null, $who = false)
+    {
+        if (empty($what)) return false;
 
-		if ($who === false || $who === 'robot') {
-			if (is_array($where)) {
-				foreach ($where as $key => $value) {
-					switch ($key) {
-						case 'limit' :
-							$limit = intval($value[0]);
-							$offset = isset($value[1]) ? intval($value[1]) : 0;
-							$this->db->limit($limit, $offset);
-							break;
+        if ($who === false || $who === 'robot') {
+            if (is_array($where)) {
+                foreach ($where as $key => $value) {
+                    switch ($key) {
+                        case 'limit' :
+                            $limit = intval($value[0]);
+                            $offset = isset($value[1]) ? intval($value[1]) : 0;
+                            $this->db->limit($limit, $offset);
+                            break;
 
-						case 'order' :
-							foreach ($value as $field => $order) {
-								$this->db->order_by($field, $order);
-							}
-							break;
-						
-						default:
-							if (isset($value)) : $this->db->where($key, $value); endif;
-							break;
-					}
-				}
-			}
-			if (is_array($what)) {
-				$this->db->select($what['fields']);
-				$this->db->from($what['table']);
-				$query = $this->db->get();
-			} else {
-				$query = $this->db->get($what);
-			}
+                        case 'order' :
+                            foreach ($value as $field => $order) {
+                                $this->db->order_by($field, $order);
+                            }
+                            break;
+                        
+                        default:
+                            if (isset($value)) : $this->db->where($key, $value); endif;
+                            break;
+                    }
+                }
+            }
+            if (is_array($what)) {
+                $this->db->select($what['fields']);
+                $this->db->from($what['table']);
+                $query = $this->db->get();
+            } else {
+                $query = $this->db->get($what);
+            }
 
-		} else {
-			$the_query = "SELECT ";
+        } else {
+            $the_query = "SELECT ";
 
-			$what_table = is_array($what) ? $what['table'] : $what;				
+            $what_table = is_array($what) ? $what['table'] : $what;				
 
-			$comments = $this->h($what_table);
-			$fields_query = $this->db->list_fields($what_table);
-			$what_fields = is_array($what) ? explode($this->delimiter, $what['columns']) : $fields_query;
+            $comments = $this->h($what_table);
+            $fields_query = $this->db->list_fields($what_table);
+            $what_fields = is_array($what) ? explode($this->delimiter, $what['columns']) : $fields_query;
 
-			for ($i = 0; $i < count($what_fields); $i++) { 
-				$comment = $comments[$i];
-				if (in_array($fields_query[$i], $what_fields)) {
-					$the_query .= "`$fields_query[$i]` AS '$comment'";
-					if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
-				}
-			}
-			if ($who === 'world') {
-				$the_query .= $this->delimiter;
-				for ($i = 0; $i < count($what_fields); $i++) {
-					if (in_array($fields_query[$i], $what_fields)) {
-						$the_query .= "`$fields_query[$i]`";
-						if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
-					}
-				}
-			}
-			$the_query .= " FROM `$what_table`";
-			if (is_array($where)) {
-				foreach ($where as $key => $value) {
-					switch ($key) {
-						case 'limit' :
-							if (isset($value['limit'])) {
-								$limit = intval($value[0]);
-								$offset = isset($value[1]) ? intval($value[1]) : 0;
-								$the_query .= " LIMIT $limit OFFSET $offset";
-							}
-							break;
+            for ($i = 0; $i < count($what_fields); $i++) { 
+                $comment = $comments[$i];
+                if (in_array($fields_query[$i], $what_fields)) {
+                    $the_query .= "`$fields_query[$i]` AS '$comment'";
+                    if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
+                }
+            }
+            if ($who === 'world') {
+                $the_query .= $this->delimiter;
+                for ($i = 0; $i < count($what_fields); $i++) {
+                    if (in_array($fields_query[$i], $what_fields)) {
+                        $the_query .= "`$fields_query[$i]`";
+                        if ($i < count($what_fields) - 1) : $the_query .= $this->delimiter; endif;
+                    }
+                }
+            }
+            $the_query .= " FROM `$what_table`";
+            if (is_array($where)) {
+                foreach ($where as $key => $value) {
+                    switch ($key) {
+                        case 'limit' :
+                            if (isset($value['limit'])) {
+                                $limit = intval($value[0]);
+                                $offset = isset($value[1]) ? intval($value[1]) : 0;
+                                $the_query .= " LIMIT $limit OFFSET $offset";
+                            }
+                            break;
 
-						case 'order' :
-							foreach ($value as $field => $order) {
-								$the_query .= " ORDER BY `$field` $order";
-							}
-							break;
-						
-						default:
-							if (isset($value)) {
-								if (is_int($value)) {
-									$the_query .= " WHERE $key = $value";
-								} else {
-									$the_query .= " WHERE $key = '$value'";
-								}
-							}
-							break;
-					}
-				}
-			}
-			$query = $this->db->query($the_query);
-		}
+                        case 'order' :
+                            foreach ($value as $field => $order) {
+                                $the_query .= " ORDER BY `$field` $order";
+                            }
+                            break;
+                        
+                        default:
+                            if (isset($value)) {
+                                if (is_int($value)) {
+                                    $the_query .= " WHERE $key = $value";
+                                } else {
+                                    $the_query .= " WHERE $key = '$value'";
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            $query = $this->db->query($the_query);
+        }
 
-		switch ($how) {
-			case 'json':
-				return json_encode($query->result_array());
-				break;
+        switch ($how) {
+            case 'json':
+                return json_encode($query->result_array());
+                break;
 
-			case 'array':
-				return $query->result_array();
-				break;
+            case 'array':
+                return $query->result_array();
+                break;
 
-			// https://github.com/yuptogun/crud/issues/1
-			case 'row':
-				return $query->row();
-				break;
+            // https://github.com/yuptogun/crud/issues/1
+            case 'row':
+                return $query->row();
+                break;
 
-			default:
-				return $query->result();
-				break;
-		}
-	}
+            default:
+                return $query->result();
+                break;
+        }
+    }
 
-	/**
-	 * alias of $this->r()
-	 * 
-	 * @param string $what
-	 * @param array $where
-	 * @param string $how
-	 * @param mixed $who
-	 * @return array|string
-	 */
+    /**
+     * alias of $this->r()
+     * 
+     * @param string $what
+     * @param array $where
+     * @param string $how
+     * @param mixed $who
+     * @return array|string
+     */
     public function read($what, $where = null, $how = null, $who = false)
     {
         return $this->r($what, $where, $how, $who);
@@ -219,43 +219,43 @@ class Crud extends CI_Model
      */
     public function u($where, $when, $what, $how = null)
     {
-		if (!isset($where) || !isset($when) || !is_array($when)) {
-			return false;
-		} else {
+        if (!isset($where) || !isset($when) || !is_array($when)) {
+            return false;
+        } else {
 
-			$this->db->trans_begin();
+            $this->db->trans_begin();
 
-			foreach ($what as $key_to_update => $value_to_update) {
-				if ($this->o($where, $key_to_update, $value_to_update)) {
-					$this->db->set($key_to_update, $value_to_update, false);
-				} else {
-					$this->db->set($key_to_update, $value_to_update);
-				}
-			}
+            foreach ($what as $key_to_update => $value_to_update) {
+                if ($this->o($where, $key_to_update, $value_to_update)) {
+                    $this->db->set($key_to_update, $value_to_update, false);
+                } else {
+                    $this->db->set($key_to_update, $value_to_update);
+                }
+            }
 
-			// array('uid', 47)
-			if (count($when) == 2) {
-				$this->db->where($when[0], $when[1]);
-			// array('uid' => 47)
-			} else {
-				$this->db->where(array_keys($when)[0], array_values($when)[0]);
-			}
+            // array('uid', 47)
+            if (count($when) == 2) {
+                $this->db->where($when[0], $when[1]);
+            // array('uid' => 47)
+            } else {
+                $this->db->where(array_keys($when)[0], array_values($when)[0]);
+            }
 
-			$this->db->update($where);
+            $this->db->update($where);
 
-			$this->db->trans_complete();
+            $this->db->trans_complete();
 
-			switch ($how) {
-				case 'json':
-					$json = array('result' => $this->db->trans_status());
-					return json_encode($json);
-					break;
-				
-				default:
-					return $this->db->trans_status();
-					break;
-			}	
-		}
+            switch ($how) {
+                case 'json':
+                    $json = array('result' => $this->db->trans_status());
+                    return json_encode($json);
+                    break;
+                
+                default:
+                    return $this->db->trans_status();
+                    break;
+            }	
+        }
     }
 
     /**
@@ -282,30 +282,30 @@ class Crud extends CI_Model
      */
     public function d($where, $what, $how = null)
     {
-		if (!isset($where) || !isset($what) || !is_array($what)) {
-			return false;
-		} else {
+        if (!isset($where) || !isset($what) || !is_array($what)) {
+            return false;
+        } else {
 
-			if (count($what) == 2) {
-				$this->db->where($what[0], $what[1]);
-				$this->db->delete($where);
-			} else {
-				$this->db->delete($where, $what);
-			}
+            if (count($what) == 2) {
+                $this->db->where($what[0], $what[1]);
+                $this->db->delete($where);
+            } else {
+                $this->db->delete($where, $what);
+            }
 
-			$query = ($this->db->affected_rows() > 0);
+            $query = ($this->db->affected_rows() > 0);
 
-			switch ($how) {
-				case 'json':
-					$json = array('result' => $query);
-					return json_encode($json);
-					break;
-				
-				default:
-					return $query;
-					break;
-			}
-		}
+            switch ($how) {
+                case 'json':
+                    $json = array('result' => $query);
+                    return json_encode($json);
+                    break;
+                
+                default:
+                    return $query;
+                    break;
+            }
+        }
     }
 
     /**
@@ -360,20 +360,20 @@ class Crud extends CI_Model
      */
     public function h($where, $how = false)
     {
-		$return = [];
-		$names_query = "SELECT `COLUMN_NAME`, `COLUMN_COMMENT` FROM `INFORMATION_SCHEMA`.COLUMNS WHERE TABLE_NAME = ?";
-		$names = $this->db->query($names_query, [$where])->result_array();
-		foreach ($names as $name) {
-			if ($how) {
-				$key = $name['COLUMN_NAME'];
-				$value = $name['COLUMN_COMMENT'];
-				$return[$key] = $value;
-			} else {
+        $return = [];
+        $names_query = "SELECT `COLUMN_NAME`, `COLUMN_COMMENT` FROM `INFORMATION_SCHEMA`.COLUMNS WHERE TABLE_NAME = ?";
+        $names = $this->db->query($names_query, [$where])->result_array();
+        foreach ($names as $name) {
+            if ($how) {
+                $key = $name['COLUMN_NAME'];
+                $value = $name['COLUMN_COMMENT'];
+                $return[$key] = $value;
+            } else {
                 $column_name = ($name['COLUMN_COMMENT'] != '') ? $name['COLUMN_COMMENT'] : $name['COLUMN_NAME'] ;
                 $return[] = $column_name;
-			}
-		}
-		return $return;
+            }
+        }
+        return $return;
     }
 
     /**
@@ -433,16 +433,16 @@ class Crud extends CI_Model
      */
     public function m($where, $what = null)
     {
-		$fields = $this->db->field_data($where);
-		if ($what) {
-			foreach ($fields as $field) {
-				if ($field->name == $what) {
-					return $field;
-				}
-			}
-		} else {
-			return $fields;
-		}
+        $fields = $this->db->field_data($where);
+        if ($what) {
+            foreach ($fields as $field) {
+                if ($field->name == $what) {
+                    return $field;
+                }
+            }
+        } else {
+            return $fields;
+        }
     }
 
     /**
@@ -469,7 +469,7 @@ class Crud extends CI_Model
      */
     public function o($where, $what, $how)
     {
-		return ($this->m($where, $what)->type == 'int') && preg_match('/\w+\s?\W+\s?\d+/', $how);
+        return ($this->m($where, $what)->type == 'int') && preg_match('/\w+\s?\W+\s?\d+/', $how);
     }
 
     /**
