@@ -1,33 +1,45 @@
 # CRUD: The Generic Codeigniter Model #
 
+> Disclaimer: THIS REPO IS OFFICIALLY OUT OF MAINTANENCE. Please do not expect any updates, although it's only MySQL-capable, it has no idea what "grouping" is and it may have possible bugs or points of improvements. (See "To Do" for more)
+
 ## Overview ##
 
-**CRUD** has 2 purposes. The one is, to let the developers focus on the DB query variables and targeted values, rather than the repetitive "Query Builder Class" syntax.
+**CRUD** has 2 key purposes.
 
-    $this->db->where('foo');
-    $this->db->order_by('bar', 'asc');
-    $this->db->order_by('dee', 'desc');
-    $this->db->limit(30,0);
-    $query = $this->db->get();
-    if ($query) : $result = json_encode($query->result()); endif;
+1. To let developers build queries with structured idea.
+2. To give extra functionalities -- converting it into JSON, utilizing comments in tables, etc.
 
-With **CRUD** loaded, the above is equivalent to:
+Suppose you need a JSON of 30 `foo` records ordered by `bar` and `dee`, which is fairly the most common daily use case of CodeIgniter models.
 
-    $result = $this->crud->r('foo',
-        array(
-            'order' => array('bar' => 'asc', 'dee' => 'desc'),
-            'limit' => array(30,0),
-        ),
-        'json');
+```
+$this->db->where('foo');
+$this->db->order_by('bar', 'asc');
+$this->db->order_by('dee', 'desc');
+$this->db->limit(30, 0);
+$foos = $this->db->get();
+$json = json_encode($foos->result());
+```
 
-The other purpose is, to give extra functionality to the developers who works under the LAMP environment and the expected needs they sometimes need to meet. Like, storing and retrieving the human readable names of the table fields.
+With **CRUD** loaded, you do that like this.
 
-> Please note that this model assumes the DB is MySQL.
+```
+$json = $this->crud->r('foo', [
+    'order' => ['bar' => 'asc', 'dee' => 'desc'],
+    'limit' => [30, 0]
+], 'json');
+```
+
+It would help you out when you:
+- have 100+ tables that have no complicated relationships, or
+- have to define 100+ model methods to get these fields or that fields, and
+- have 0 of "heavy queries"
+
+So choose at your own risk and enjoy.
 
 ## Installation ##
 
-- Simply put `Crud.php` into your Codeigniter application's models directory and load it to use.
-- If you're familiar with Git, clone and make use of this entire repo as you please.
+- Load `Crud.php` as you want it -- third party package, CI library or one of the models
+- Clone or fork this repo and everybody gangsta
 
 ## Available Methods ##
 
@@ -56,7 +68,7 @@ The other purpose is, to give extra functionality to the developers who works un
       - `limit` *(arr)* A simple array of 2 numbers (`LIMIT` and `OFFSET`)
       - if the key is neither `order` nor `limit`, **CRUD** regards it as the field name and its value as the rest part of SQL WHERE syntax.
       For example: `array('column_user_age' => '> 19')`
-    - `$how` *(str)* How to get the result of the query. Either `'json'`, `'array'`(a perfect array) or `null`(array of row objects).
+    - `$how` *(str)* How to get the result of the query. Either `'json'`, `'array'`(a perfect array), `'row'`(when you ) or `null`(array of row objects).
     - `$who` *(mixed)* Who is going to read it. Utilizing `h()` method. Either `'human'`(or `true`) for human readable names only, `'robot'`(or `false`) for the code-friendly field names only or `'world'` for both.
 
 
@@ -108,7 +120,7 @@ The other purpose is, to give extra functionality to the developers who works un
 
 ## Alias of the methods ##
 
-A cheatsheet just in case you don't recall! :-)
+A cheatsheet just in case you don't recall.
 
 1.  `create() === c()`
 2.  `read() === r()`
@@ -119,9 +131,14 @@ A cheatsheet just in case you don't recall! :-)
 7.  `metadata() === m()`
 8.  `operator() === o()`
 
+## So you don't accept any PR? ##
+
+I probably do. Now the repo is applied of Git Flow, FYI.
+
 ## To do ##
 
-*   Update `$when` logic of both `u()` and `s()`, so that it could run multiple column match test
-*   Add more `WHERE` options like `LIKE %string%`
-*   Pass the unit test of the code
-*   Supporting more database than MySQL
+Since CRUD has not any good idea of DB drivers or any support for mid-level SQL needs like JOIN, GROUP, COUNT or else, this approach should be replaced by something enhanced. To be announced.
+
+## License
+
+MIT
