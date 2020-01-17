@@ -152,6 +152,10 @@ class Crud extends CI_Model {
 					return $query->result_array();
 					break;
 
+				case 'row':
+					return $query->row();
+					break;
+
 				default:
 					return $query->result();
 					break;
